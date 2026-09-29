@@ -142,6 +142,22 @@ class ProviderTests(unittest.TestCase):
                 self.assertEqual(raised.exception.code, 2)
 
 
+class ServeUsesPrivateStdoutTests(unittest.TestCase):
+    def test_serve_answers_on_the_private_stream(self):
+        # serve() itself must take the private stream; a native print on
+        # fd 1 during a request would otherwise land inside a reply.
+        private = io.BytesIO()
+        fake = types.ModuleType("faster_whisper")
+        fake.WhisperModel = FakeModel
+        with tempfile.TemporaryDirectory() as tmp, \
+                mock.patch.dict(sys.modules, {"faster_whisper": fake}), \
+                mock.patch.object(cli, "_protocol_stdout", return_value=private) as take:
+            args = cli.build_parser().parse_args(["serve", "--model", model_dir(tmp)])
+            self.assertEqual(cli.serve(args, stdin=io.BytesIO(b"")), 0)
+        take.assert_called_once_with()
+        self.assertIn(b'"ready": true', private.getvalue())
+
+
 class ProtocolStdoutTests(unittest.TestCase):
     def test_native_prints_go_to_stderr(self):
         # In a child, so redirecting fd 1 cannot disturb the test runner.
