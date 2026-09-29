@@ -26,6 +26,12 @@ MAX_THREADS = 64
 MAX_BEAM = 10
 # The files faster-whisper needs from a CTranslate2 Whisper conversion.
 REQUIRED_FILES = ("model.bin", "config.json", "tokenizer.json", "vocabulary.txt")
+# Whisper writes words even for silence or a noise burst ("You", "Thank
+# you."), but it also rates each segment's chance of holding no speech. On
+# dictated speech that rating was 0.01-0.05; on a microphone pop or silence,
+# 0.85-0.90. Segments at or above this are dropped, so a pop reads as nothing
+# and the caller keeps listening.
+NO_SPEECH_THRESHOLD = 0.6
 
 
 class ProviderError(Exception):
@@ -72,7 +78,9 @@ def transcribe_pcm(model, pcm: bytes, beam: int) -> str:
         segments, _info = model.transcribe(
             samples_of(pcm), language="en", beam_size=beam, vad_filter=False,
             condition_on_previous_text=False)
-        return " ".join(text for text in (segment.text.strip() for segment in segments) if text)
+        return " ".join(text for text in (segment.text.strip() for segment in segments
+                                          if segment.no_speech_prob < NO_SPEECH_THRESHOLD)
+                        if text)
     except Exception as error:
         raise ProviderError(f"transcription failed: {error}") from error
 

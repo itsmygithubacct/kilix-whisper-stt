@@ -42,6 +42,12 @@ output:
 File descriptor 1 is redirected to stderr, so anything a native library prints
 cannot corrupt a reply.
 
+Whisper writes words even for silence or a microphone pop ("You"), but it
+rates each segment's chance of holding no speech. Segments rated 0.6 or higher
+are dropped, so a pop returns an empty transcript and Kilix keeps listening. On
+25 dictated prompts, no speech was dropped. Silence, noise and a pop returned
+nothing.
+
 Decoding is fixed for dictation: English, beam 5 by default, no voice-activity
 filter, and no conditioning on previous text. Kilix detects the end of speech
 itself.

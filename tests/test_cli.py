@@ -28,8 +28,8 @@ class FakeModel:
         self.calls.append((samples, options))
         if samples == b"\xff\xff":
             raise RuntimeError("decoder exploded")
-        words = [" hello ", "", " world"] if samples else []
-        return iter(SimpleNamespace(text=word) for word in words), None
+        words = [(" hello ", 0.02), ("", 0.0), (" You", 0.6), (" world", 0.59)] if samples else []
+        return iter(SimpleNamespace(text=word, no_speech_prob=p) for word, p in words), None
 
 
 def model_dir(root: str, skip: str | None = None) -> str:
