@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kilix-whisper-stt"
+version = "0.1.0"
+description = "Local Whisper dictation provider for Kilix, on faster-whisper"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [
+  {name = "itsmygithubacct", email = "itsmygithubacct@users.noreply.github.com"},
+]
+dependencies = [
+  "faster-whisper==1.2.0",
+  # faster_whisper.utils imports requests but does not declare it.
+  "requests>=2.32",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Typing :: Typed",
+]
+
+[project.scripts]
+kilix-whisper-stt = "kilix_whisper_stt.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+kilix_whisper_stt = ["py.typed"]
