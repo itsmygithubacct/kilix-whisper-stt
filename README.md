@@ -9,9 +9,11 @@ installs them into a private environment, never into the system Python.
 **Status:** not part of the Plebian-OS image. Kilix installs a pinned commit of
 this provider (`15ef23b3` for Plebian-OS 0.2.3) into the user's data directory
 on first use, with `kilix voice whisper`. The model is a separate Kilix Content
-asset (`faster-whisper-small-en`, or `faster-whisper-medium-en`) that downloads
-only after its licence screen, through `kilix stt --install`; no weights ship
-in the ISO.
+asset (`faster-whisper-small-en`, or `faster-whisper-medium-en`) that
+`kilix stt --install` downloads after its licence screen; no weights ship in
+the ISO. A Plebian-OS 0.2.3 online update also downloads
+`faster-whisper-medium-en` as a Kilix Playalong default, unless the machine
+declined Playalong's default models.
 
 ## What it does
 
